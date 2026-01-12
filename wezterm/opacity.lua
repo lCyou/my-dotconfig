@@ -1,11 +1,11 @@
 local wezterm = require("wezterm")
+local config = wezterm.config_builder()
 
 local M = {}
 
 -- Opacity切り替え用の状態管理
 local default_opacity = 0.70 --デフォルト値
 local is_transparent = true
-
 
 -- Opacity切り替え関数
 M.toggle = function(window, pane)
