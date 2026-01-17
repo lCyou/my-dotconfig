@@ -2,7 +2,7 @@ local settings = require("settings")
 local colors = require("colors")
 
 -- Padding item required because of bracket
--- sbar.add("item", { position = "right", width = settings.group_paddings })
+sbar.add("item", { position = "right", width = settings.group_paddings })
 
 -- 時計
 local cal_clock = sbar.add("item", {
@@ -105,4 +105,4 @@ cal_day:subscribe({ "forced", "routine", "system_woke" }, function(env)
 end)
 
 -- add width
-sbar.add("item", { position = "right", width = 0 })
+sbar.add("item", { position = "right", width = 6 })

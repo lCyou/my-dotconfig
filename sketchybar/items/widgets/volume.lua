@@ -24,16 +24,16 @@ local volume_icon = sbar.add("item", "widgets.volume2", {
 		align = "left",
 		font = {
 			style = settings.font.style_map["Regular"],
-			size = 14.0,
+			size = 10.0,
 		},
 	},
 	label = {
 		color = colors.mono_white,
-		width = 25,
+		width = 16,
 		align = "left",
 		font = {
 			style = settings.font.style_map["Regular"],
-			size = 14.0,
+			size = 10.0,
 		},
 	},
 })
@@ -49,10 +49,10 @@ local volume_bracket = sbar.add("bracket", "widgets.volume.bracket", {
 	},
 })
 
--- sbar.add("item", "widgets.volume.padding", {
--- 	position = "right",
--- 	width = settings.group_paddings,
--- })
+sbar.add("item", "widgets.volume.padding", {
+	position = "right",
+	width = settings.group_paddings,
+})
 
 -- add width
 sbar.add("item", { position = "right", width = 6 })

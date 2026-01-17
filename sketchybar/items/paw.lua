@@ -21,12 +21,12 @@ local paw = sbar.add("item", {
 	},
 	label = {
 		align = "center",
-		string = app_icons["paw"],
-		font = "sketchybar-app-font-bg:Regular:18.0",
+		string = "ICYOU",
+		font = "sketchybar-app-font-bg:Regular:10.0",
 		-- somehow icon is not centered, add additional padding on left
-		padding_left = 2,
-		padding_right = 1,
-		color = colors.cmap_1,
+		-- padding_left = 2,
+		-- padding_right = 1,
+		color = colors.mono_white,
 		background = {
 			color = colors.tmux_white,
 			padding_left = 0,
@@ -40,7 +40,7 @@ local paw = sbar.add("item", {
 sbar.add("bracket", { paw.name }, {
 	background = {
 		color = colors.tn_black3,
-		border_color = colors.cmap_1,
+		border_color = colors.mono_white,
 		corner_radius = 10,
 		padding_left = 0,
 		padding_right = 0,

@@ -7,7 +7,7 @@ local battery = sbar.add("item", "widgets.battery", {
 	icon = {
 		font = {
 			style = settings.font.style_map["Regular"],
-			size = 19.0,
+			size = 16.0,
 		},
 		padding_left = 9,
 		padding_right = 0,
@@ -119,10 +119,10 @@ sbar.add("bracket", "widgets.battery.bracket", { battery.name }, {
 	background = { color = colors.mono_bg, border_color = colors.mono_border },
 })
 
--- sbar.add("item", "widgets.battery.padding", {
--- 	position = "right",
--- 	width = settings.group_paddings,
--- })
+sbar.add("item", "widgets.battery.padding", {
+	position = "right",
+	width = settings.group_paddings,
+})
 
 -- add padding
 sbar.add("item", {
