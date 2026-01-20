@@ -3,7 +3,7 @@ local opacity = require("opacity")
 local act = wezterm.action
 
 -- Show which key table is active in the status area
-wezterm.on("update-right-status", function(window, pane)
+wezterm.on("update-left-status", function(window, pane)
   local name = window:active_key_table()
   if name then
     name = "TABLE: " .. name

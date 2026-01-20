@@ -2,10 +2,11 @@ local wezterm = require("wezterm")
 local config = wezterm.config_builder()
 
 config.automatically_reload_config = true
-config.font_size = 12.0
+config.color_scheme = 'Espresso (Gogh)'
+config.font_size = 12.5
 config.use_ime = true
 config.window_background_opacity = 0.70
-config.macos_window_background_blur = 2 
+config.macos_window_background_blur = 2
 
 ----------------------------------------------------
 -- Tab
@@ -14,10 +15,10 @@ config.macos_window_background_blur = 2
 config.window_decorations = "RESIZE"
 -- タブバーの表示
 config.show_tabs_in_tab_bar = true
--- タブが一つの時は非表示
-config.hide_tab_bar_if_only_one_tab = true
 -- falseにするとタブバーの透過が効かなくなる
 -- config.use_fancy_tab_bar = false
+-- タブバーを一番下に表示する
+config.tab_bar_at_bottom = true
 
 -- タブバーの透過
 config.window_frame = {
@@ -45,8 +46,10 @@ config.colors = {
 
 -- タブの形をカスタマイズ
 -- タブの装飾
-local SOLID_LEFT_ARROW = wezterm.nerdfonts.ple_left_half_circle_thick
-local SOLID_RIGHT_ARROW = wezterm.nerdfonts.ple_right_half_circle_thick
+-- タブの左側の装飾
+local SOLID_LEFT_ARROW = wezterm.nerdfonts.ple_lower_right_triangle
+-- タブの右側の装飾
+local SOLID_RIGHT_ARROW = wezterm.nerdfonts.ple_upper_left_triangle
 
 wezterm.on("format-tab-title", function(tab, tabs, panes, config, hover, max_width)
   local background = "#5c6d74"
@@ -78,6 +81,11 @@ config.disable_default_key_bindings = true
 config.keys = require("keybinds").keys
 config.key_tables = require("keybinds").key_tables
 config.leader = { key = "q", mods = "CTRL", timeout_milliseconds = 2000 }
+
+----------------------------------------------------
+-- statusbar
+----------------------------------------------------
+require("statusbar")
 
 return config
 
