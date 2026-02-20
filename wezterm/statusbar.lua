@@ -11,6 +11,8 @@ local HEADER_CWD = { Foreground = { Color = '#92aac7' }, Text = wezterm.nerdfont
 local HEADER_DATE = { Foreground = { Color = '#ffccac' }, Text = wezterm.nerdfonts.md_calendar_multiselect }
 local HEADER_TIME = { Foreground = { Color = '#bcbabe' }, Text = wezterm.nerdfonts.fa_clock_o }
 local HEADER_BATTERY = { Foreground = { Color = '#dfe166' }, Text = wezterm.nerdfonts.fa_battery_3 }
+local HEADER_WORKSPACE = { Foreground = { Color = '#b0e0e6' }, Text = wezterm.nerdfonts.md_tab .. ' ' }
+local HEADER_KEYTABLE = { Foreground = { Color = '#f4a460' }, Text = wezterm.nerdfonts.md_keyboard .. ' ' }
 
 local function AddElement(elems, header, str)
   table.insert(elems, { Foreground = header.Foreground })
@@ -59,11 +61,17 @@ local function GetBattery(elems, window)
 end
 
 local function LeftUpdate(window, pane)
+  local elems = {}
+
+  -- ワークスペース名を表示
+  AddElement(elems, HEADER_WORKSPACE, window:active_workspace())
+
   local name = window:active_key_table()
   if name then
-    name = "TABLE: " .. name
+    AddElement(elems, HEADER_KEYTABLE, 'TABLE: ' .. name)
   end
-  window:set_left_status(name or "")
+
+  window:set_left_status(wezterm.format(elems))
 end
 
 local function RightUpdate(window, pane)
