@@ -11,7 +11,7 @@ local HEADER_CWD = { Foreground = { Color = '#92aac7' }, Text = wezterm.nerdfont
 local HEADER_DATE = { Foreground = { Color = '#ffccac' }, Text = wezterm.nerdfonts.md_calendar_multiselect }
 local HEADER_TIME = { Foreground = { Color = '#bcbabe' }, Text = wezterm.nerdfonts.fa_clock_o }
 local HEADER_BATTERY = { Foreground = { Color = '#dfe166' }, Text = wezterm.nerdfonts.fa_battery_3 }
-local HEADER_WORKSPACE = { Foreground = { Color = '#b0e0e6' }, Text = wezterm.nerdfonts.md_tab .. ' ' }
+local HEADER_WORKSPACE = { Foreground = { Color = '#b0e0e6' }, Text = wezterm.nerdfonts.md_space_invaders .. ' ' }
 
 local function AddElement(elems, header, str)
   table.insert(elems, { Foreground = header.Foreground })
