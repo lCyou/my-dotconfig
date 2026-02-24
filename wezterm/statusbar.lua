@@ -11,6 +11,7 @@ local HEADER_CWD = { Foreground = { Color = '#92aac7' }, Text = wezterm.nerdfont
 local HEADER_DATE = { Foreground = { Color = '#ffccac' }, Text = wezterm.nerdfonts.md_calendar_multiselect }
 local HEADER_TIME = { Foreground = { Color = '#bcbabe' }, Text = wezterm.nerdfonts.fa_clock_o }
 local HEADER_BATTERY = { Foreground = { Color = '#dfe166' }, Text = wezterm.nerdfonts.fa_battery_3 }
+local HEADER_WORKSPACE = { Foreground = { Color = '#b0e0e6' }, Text = wezterm.nerdfonts.md_space_invaders .. ' ' }
 
 local function AddElement(elems, header, str)
   table.insert(elems, { Foreground = header.Foreground })
@@ -58,12 +59,16 @@ local function GetBattery(elems, window)
   end
 end
 
+local function GetWorkspace(elems, window)
+  AddElement(elems, HEADER_WORKSPACE, window:active_workspace())
+end
+
 local function LeftUpdate(window, pane)
-  local name = window:active_key_table()
-  if name then
-    name = "TABLE: " .. name
-  end
-  window:set_left_status(name or "")
+  local elems = {}
+
+  GetWorkspace(elems, window)
+
+  window:set_left_status(wezterm.format(elems))
 end
 
 local function RightUpdate(window, pane)
