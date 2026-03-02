@@ -83,10 +83,20 @@ return {
         vim.fn.sign_define(sign.name, { texthl = sign.name, text = sign.text, numhl = "" })
       end
 
+      -- Organize Imports 関数（TypeScript/JavaScript専用）
+      local function organize_imports()
+        local params = {
+          command = "_typescript.organizeImports",
+          arguments = { vim.api.nvim_buf_get_name(0) },
+        }
+        vim.lsp.buf.execute_command(params)
+      end
+
       -- LSPが起動したときのキーマップ設定
       vim.api.nvim_create_autocmd("LspAttach", {
         callback = function(args)
           local bufnr = args.buf
+          local client = vim.lsp.get_client_by_id(args.data.client_id)
           local opts = { buffer = bufnr, noremap = true, silent = true }
 
           -- キーマップの設定（標準的なスタイル）
@@ -97,6 +107,11 @@ return {
           vim.keymap.set("n", "<C-k>", vim.lsp.buf.signature_help, vim.tbl_extend("force", opts, { desc = "シグネチャヘルプ" }))
           vim.keymap.set("n", "<leader>ln", vim.lsp.buf.rename, vim.tbl_extend("force", opts, { desc = "LSP: シンボルをリネーム" }))
           vim.keymap.set("n", "<leader>la", vim.lsp.buf.code_action, vim.tbl_extend("force", opts, { desc = "LSP: コードアクション" }))
+          
+          -- TypeScript専用: Organize Imports
+          if client and client.name == "ts_ls" then
+            vim.keymap.set("n", "<leader>lo", organize_imports, vim.tbl_extend("force", opts, { desc = "LSP: Organize Imports" }))
+          end
           
           -- 診断メッセージ関連
           vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, vim.tbl_extend("force", opts, { desc = "前のエラーへ" }))
@@ -109,6 +124,20 @@ return {
             vim.keymap.set("n", "gr", "<cmd>Telescope lsp_references<CR>", vim.tbl_extend("force", opts, { desc = "参照を表示" }))
           else
             vim.keymap.set("n", "gr", vim.lsp.buf.references, vim.tbl_extend("force", opts, { desc = "参照を表示" }))
+          end
+        end,
+      })
+
+      -- TypeScript/JavaScriptファイル保存時に自動でOrganize Imports実行
+      vim.api.nvim_create_autocmd("BufWritePre", {
+        pattern = { "*.ts", "*.tsx", "*.js", "*.jsx" },
+        callback = function()
+          -- ts_lsが起動している場合のみ実行
+          local clients = vim.lsp.get_clients({ bufnr = 0, name = "ts_ls" })
+          if #clients > 0 then
+            organize_imports()
+            -- organize importsの完了を待つ（少し待機）
+            vim.wait(100)
           end
         end,
       })
