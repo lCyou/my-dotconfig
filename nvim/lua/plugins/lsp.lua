@@ -25,6 +25,7 @@ return {
         -- 自動インストールするLSPサーバー
         ensure_installed = {
           "ts_ls",  -- TypeScript Language Server
+          "rust_analyzer",  -- Rust Language Server
         },
         automatic_installation = true,
       })
@@ -83,7 +84,7 @@ return {
         vim.fn.sign_define(sign.name, { texthl = sign.name, text = sign.text, numhl = "" })
       end
 
-      -- Organize Imports 関数（TypeScript/JavaScript専用）
+      -- Organize Imports 
       local function organize_imports()
         local params = {
           command = "_typescript.organizeImports",
@@ -99,7 +100,6 @@ return {
           local client = vim.lsp.get_client_by_id(args.data.client_id)
           local opts = { buffer = bufnr, noremap = true, silent = true }
 
-          -- キーマップの設定（標準的なスタイル）
           vim.keymap.set("n", "gd", vim.lsp.buf.definition, vim.tbl_extend("force", opts, { desc = "定義へジャンプ" }))
           vim.keymap.set("n", "gD", vim.lsp.buf.declaration, vim.tbl_extend("force", opts, { desc = "宣言へジャンプ" }))
           vim.keymap.set("n", "gi", vim.lsp.buf.implementation, vim.tbl_extend("force", opts, { desc = "実装へジャンプ" }))
@@ -116,9 +116,7 @@ return {
           -- 診断メッセージ関連
           vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, vim.tbl_extend("force", opts, { desc = "前のエラーへ" }))
           vim.keymap.set("n", "]d", vim.diagnostic.goto_next, vim.tbl_extend("force", opts, { desc = "次のエラーへ" }))
-          -- 診断メッセージは自動表示（カーソルを0.5秒止める）のみで手動キーマップなし
           
-          -- Telescopeがインストールされている場合は、参照表示にTelescopeを使用
           local has_telescope = pcall(require, "telescope.builtin")
           if has_telescope then
             vim.keymap.set("n", "gr", "<cmd>Telescope lsp_references<CR>", vim.tbl_extend("force", opts, { desc = "参照を表示" }))
@@ -136,13 +134,12 @@ return {
           local clients = vim.lsp.get_clients({ bufnr = 0, name = "ts_ls" })
           if #clients > 0 then
             organize_imports()
-            -- organize importsの完了を待つ（少し待機）
             vim.wait(100)
           end
         end,
       })
 
-      -- TypeScript Language Server (ts_ls) の設定（Neovim 0.11の新しいAPI）
+      -- TypeScript Language Server設定
       vim.lsp.config.ts_ls = {
         cmd = { "typescript-language-server", "--stdio" },
         filetypes = { "typescript", "typescriptreact", "typescript.tsx", "javascript", "javascriptreact" },
@@ -158,14 +155,35 @@ return {
         end,
       })
 
-      -- 他のLSPサーバーも同様に設定可能
-      -- 例: Lua Language Server (既にインストールされている場合)
-      -- vim.lsp.config.lua_ls = {
-      --   cmd = { "lua-language-server" },
-      --   filetypes = { "lua" },
-      --   root_markers = { ".luarc.json", ".luarc.jsonc", ".luacheckrc", ".stylua.toml", "stylua.toml", "selene.toml", "selene.yml", ".git" },
-      --   capabilities = capabilities,
-      -- }
+      -- Rustファイルを開いたときに自動起動
+      vim.api.nvim_create_autocmd("FileType", {
+        pattern = { "rust" },
+        callback = function()
+          vim.lsp.enable("rust_analyzer")
+        end,
+      })
+
+      -- rust-analyzer の設定
+      vim.lsp.config.rust_analyzer = {
+        cmd = { "rust-analyzer" },
+        filetypes = { "rust" },
+        root_markers = { "Cargo.toml", "rust-project.json" },
+        capabilities = capabilities,
+        settings = {
+          ["rust-analyzer"] = {
+            cargo = {
+              allFeatures = true,  -- すべてのCargoフィーチャーを有効化
+              loadOutDirsFromCheck = true,
+            },
+            procMacro = {
+              enable = true,  -- プロシージャマクロを有効化
+            },
+            checkOnSave = {
+              command = "clippy",  -- 保存時にclippyでチェック
+            },
+          },
+        },
+      }
     end
   },
 }

@@ -11,10 +11,10 @@ return {
       typescript = { "eslint" },
       javascriptreact = { "eslint" },
       typescriptreact = { "eslint" },
+      rust = { "clippy" },
     }
 
     -- ESLint設定
-    -- プロジェクトのnode_modules内のeslintを優先使用
     lint.linters.eslint = require("lint.linters.eslint")
 
     -- リントを実行する関数
@@ -28,7 +28,7 @@ return {
       end,
     })
 
-    -- Insert モードを抜けた時にもリント実行（リアルタイムフィードバック）
+    -- Insert モードを抜けた時にリント実行
     vim.api.nvim_create_autocmd({ "InsertLeave" }, {
       group = lint_augroup,
       callback = function()
@@ -36,7 +36,7 @@ return {
       end,
     })
 
-    -- 手動リント用のキーマップ（オプション）
+    -- 手動リント用キーマップ
     vim.keymap.set("n", "<leader>ll", function()
       lint.try_lint()
     end, { desc = "LSP: リント実行 (ESLint)" })

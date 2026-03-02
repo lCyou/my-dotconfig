@@ -18,6 +18,7 @@ return {
         yaml = { "prettier" },
         markdown = { "prettier" },
         lua = { "stylua" },
+        rust = { "rustfmt" },
       },
 
       -- フォーマッターの設定
@@ -31,7 +32,14 @@ return {
       },
 
       -- フォーマットオプション
-      format_on_save = nil, -- 保存時の自動フォーマットは無効（手動のみ）
+      format_on_save = function(bufnr)
+        -- Rustファイルの場合のみ自動フォーマット
+        local filetype = vim.bo[bufnr].filetype
+        if filetype == "rust" then
+          return { timeout_ms = 500, lsp_fallback = true }
+        end
+        return nil  -- 他のファイルタイプは自動フォーマットしない
+      end,
     })
 
     -- 手動フォーマット用のキーマップ
