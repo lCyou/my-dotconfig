@@ -6,6 +6,7 @@ require('keymap')
 require('plugin')
 require("config.lazy")
 
+vim.opt.guicursor = "a:block" -- cursorをブロック表示にする
 vim.opt.number = true         -- 行番号を表示 (nu)
 vim.opt.relativenumber = true  -- 相対行番号を表示 (rnu)
 vim.opt.signcolumn = "yes"     -- サインカラムを常時表示（Git差分記号用、幅固定でガタつき防止）

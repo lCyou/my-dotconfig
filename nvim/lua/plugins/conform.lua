@@ -1,4 +1,3 @@
--- conform.nvim: フォーマッター統合
 return {
   "stevearc/conform.nvim",
   event = { "BufReadPre", "BufNewFile" },
@@ -16,7 +15,6 @@ return {
         html = { "prettier" },
         json = { "prettier" },
         yaml = { "prettier" },
-        markdown = { "prettier" },
         lua = { "stylua" },
         rust = { "rustfmt" },
       },
@@ -24,8 +22,6 @@ return {
       -- フォーマッターの設定
       formatters = {
         prettier = {
-          -- プロジェクトのnode_modules内のprettierを優先使用
-          -- なければグローバルにフォールバック
           command = "prettier",
           args = { "--stdin-filepath", "$FILENAME" },
         },
@@ -33,12 +29,11 @@ return {
 
       -- フォーマットオプション
       format_on_save = function(bufnr)
-        -- Rustファイルの場合のみ自動フォーマット
         local filetype = vim.bo[bufnr].filetype
         if filetype == "rust" then
           return { timeout_ms = 500, lsp_fallback = true }
         end
-        return nil  -- 他のファイルタイプは自動フォーマットしない
+        return nil  
       end,
     })
 
