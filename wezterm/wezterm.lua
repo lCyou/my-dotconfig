@@ -3,6 +3,10 @@ local config = wezterm.config_builder()
 
 config.automatically_reload_config = true
 config.color_scheme = 'Espresso (Gogh)'
+config.font = wezterm.font_with_fallback({
+  "JetBrainsMono Nerd Font",
+  "Hiragino Sans",
+})
 config.font_size = 12.5
 config.use_ime = true
 config.window_background_opacity = 0.70
