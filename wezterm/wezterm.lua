@@ -5,7 +5,7 @@ config.automatically_reload_config = true
 config.color_scheme = 'Espresso (Gogh)'
 config.font = wezterm.font_with_fallback({
   "JetBrainsMono Nerd Font",
-  "Hiragino Sans",
+  "UDEV Gothic NF",
 })
 config.font_size = 12.5
 config.use_ime = true
