@@ -1,11 +1,9 @@
--- nvim-lint: リンター統合
 return {
   "mfussenegger/nvim-lint",
   event = { "BufReadPre", "BufNewFile" },
   config = function()
     local lint = require("lint")
 
-    -- ファイルタイプごとのリンター設定
     lint.linters_by_ft = {
       javascript = { "eslint" },
       typescript = { "eslint" },
@@ -14,26 +12,32 @@ return {
       rust = { "clippy" },
     }
 
-    -- ESLint設定
     lint.linters.eslint = require("lint.linters.eslint")
-
-    -- リントを実行する関数
     local lint_augroup = vim.api.nvim_create_augroup("lint", { clear = true })
 
-    -- 保存時にリント実行
+    local function try_lint_safe()
+      local linters = lint.linters_by_ft[vim.bo.filetype] or {}
+      local available = vim.tbl_filter(function(name)
+        local linter = lint.linters[name]
+        if not linter then return false end
+        local cmd = linter.cmd
+        return vim.fn.executable(cmd) == 1
+          or vim.fn.findfile("node_modules/.bin/" .. cmd, ".;") ~= ""
+      end, linters)
+      if #available > 0 then
+        lint.try_lint(available)
+      end
+    end
+
     vim.api.nvim_create_autocmd({ "BufWritePost" }, {
       group = lint_augroup,
-      callback = function()
-        lint.try_lint()
-      end,
+      callback = try_lint_safe,
     })
 
     -- Insert モードを抜けた時にリント実行
     vim.api.nvim_create_autocmd({ "InsertLeave" }, {
       group = lint_augroup,
-      callback = function()
-        lint.try_lint()
-      end,
+      callback = try_lint_safe,
     })
 
     -- 手動リント用キーマップ
