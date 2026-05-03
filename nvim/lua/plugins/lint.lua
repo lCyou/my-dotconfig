@@ -21,6 +21,7 @@ return {
         local linter = lint.linters[name]
         if not linter then return false end
         local cmd = linter.cmd
+        if type(cmd) ~= "string" then return false end
         return vim.fn.executable(cmd) == 1
           or vim.fn.findfile("node_modules/.bin/" .. cmd, ".;") ~= ""
       end, linters)
