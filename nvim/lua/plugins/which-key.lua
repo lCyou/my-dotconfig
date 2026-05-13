@@ -1,4 +1,3 @@
--- which-key.nvim: キーマップをポップアップで表示するヘルパー
 return {
   "folke/which-key.nvim",
   event = "VeryLazy",
@@ -10,23 +9,19 @@ return {
     local wk = require("which-key")
     
     wk.setup({
-      -- シンプルな表示スタイル
       preset = "modern",
       delay = 200,
       
-      -- ウィンドウ設定
       win = {
         border = "rounded",
         padding = { 1, 2 },
       },
       
-      -- レイアウト設定
       layout = {
         spacing = 3,
         align = "left",
       },
       
-      -- アイコン設定
       icons = {
         breadcrumb = "»",
         separator = "➜",
@@ -35,7 +30,6 @@ return {
       
       -- ビルトインマッピングを表示
       spec = {
-        -- 基本的なVimコマンド
         { "g", group = "goto" },
         { "gt", desc = "Go to next tab" },
         { "gT", desc = "Go to previous tab" },
