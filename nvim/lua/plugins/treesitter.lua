@@ -1,26 +1,16 @@
-local ts_opts = {
-    ensure_installed = { 
-        "java", 
-        "rust",          -- Rust用
-        "typescript",    -- TypeScript用
-        "tsx",           -- React/TSX用
-        "lua", 
-        "vim", 
-        "vimdoc", 
-        "query", 
-        "markdown", 
-        "markdown_inline",
-        "bash",
-        "json"
-    },
-    
-    auto_install = true,
+local nix_grammars = vim.env.TREESITTER_GRAMMARS
 
+local ts_opts = {
+    auto_install = nix_grammars == nil,
+    ensure_installed = nix_grammars and {} or {
+        "java", "rust", "typescript", "tsx",
+        "lua", "vim", "vimdoc", "query",
+        "markdown", "markdown_inline", "bash", "json"
+    },
     highlight = {
         enable = true,
         additional_vim_regex_highlighting = false,
     },
-
     indent = {
         enable = true,
     },
@@ -28,7 +18,8 @@ local ts_opts = {
 
 local M = {
     "nvim-treesitter/nvim-treesitter",
-    build = ":TSUpdate",
+    dir = nix_grammars,
+    build = nix_grammars and false or ":TSUpdate",
 }
 
 M.config = function()

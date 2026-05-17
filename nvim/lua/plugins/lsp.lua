@@ -1,44 +1,8 @@
 -- LSP設定
 return {
-  -- Mason: LSPサーバー管理ツール
-  {
-    "williamboman/mason.nvim",
-    config = function()
-      require("mason").setup({
-        ui = {
-          icons = {
-            package_installed = "✓",
-            package_pending = "➜",
-            package_uninstalled = "✗"
-          }
-        }
-      })
-    end
-  },
-
-  -- Mason-lspconfig: MasonとLspconfigの連携
-  {
-    "williamboman/mason-lspconfig.nvim",
-    dependencies = { "williamboman/mason.nvim" },
-    config = function()
-      require("mason-lspconfig").setup({
-        -- 自動インストールするLSPサーバー
-        ensure_installed = {
-          "ts_ls",  -- TypeScript Language Server
-          "rust_analyzer",  -- Rust Language Server
-        },
-        automatic_installation = true,
-      })
-    end
-  },
-
-  -- Lspconfig: LSPの基本設定
   {
     "neovim/nvim-lspconfig",
-    dependencies = {
-      "williamboman/mason.nvim",
-      "williamboman/mason-lspconfig.nvim",
-    },
+    dependencies = { "hrsh7th/cmp-nvim-lsp" },
     config = function()
       local capabilities = require("cmp_nvim_lsp").default_capabilities()
 

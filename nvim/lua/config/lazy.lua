@@ -27,9 +27,8 @@ require("lazy").setup({
     -- import your plugins
     { import = "plugins" },
   },
-  -- Configure any other settings here. See the documentation for more details.
-  -- colorscheme that will be used when installing plugins.
   install = { colorscheme = { "habamax" } },
-  -- automatically check for plugin updates
   checker = { enabled = true },
+  -- nix store のファイルは読み取り専用のため、書き込み可能なパスに変更
+  lockfile = vim.fn.stdpath("data") .. "/lazy-lock.json",
 })
