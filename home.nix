@@ -1,4 +1,9 @@
-{ config, lib, pkgs, ... }: {
+{ config, lib, pkgs, ... }:
+let
+  nr = pkgs.writeShellScriptBin "nr" ''
+    exec darwin-rebuild switch --flake ~/.config/nix-darwin "$@"
+  '';
+in {
   home.username = "lcyou";
   home.homeDirectory = "/Users/lcyou";
   home.stateVersion = "24.11";
@@ -9,12 +14,13 @@
   ];
 
   home.packages = with pkgs; [
+    nr
     git
     bat eza fd ripgrep tree jq
     ghq lazygit gnused
     gcc gnumake cmake automake lua
     deno pnpm yarn maven dart terraform act
-    supabase-cli switchaudio-osx sketchybar aerospace ngrok
+    supabase-cli switchaudio-osx ngrok
     cloudflared docker colima
     wezterm
     nerd-fonts.hack
@@ -35,6 +41,9 @@
       rust-analyzer
       prettier
       stylua
+      nixd
+      nixfmt-rfc-style
+      statix
     ];
   };
 
@@ -74,9 +83,6 @@
       "${config.home.homeDirectory}/ghq/github.com/lCyou/my-dotconfig/wezterm" \
       "${config.xdg.configHome}/wezterm"
   '';
-
-  # aerospace は ~/.aerospace.toml を参照 (読み取り専用で問題なし)
-  home.file.".aerospace.toml".source = ./aerospace/aerospace.toml;
 
   # borders (読み取り専用で問題なし)
   xdg.configFile."borders/bordersrc".source = ./borders/bordersrc;
