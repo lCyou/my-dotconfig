@@ -12,6 +12,7 @@ return {
       javascriptreact = { "eslint" },
       typescriptreact = { "eslint" },
       rust = { "clippy" },
+      nix = { "statix" },
     }
 
     -- ESLint設定

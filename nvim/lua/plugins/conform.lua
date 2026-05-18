@@ -17,6 +17,7 @@ return {
         yaml = { "prettier" },
         lua = { "stylua" },
         rust = { "rustfmt" },
+        nix = { "nixfmt" },
       },
 
       -- フォーマッターの設定

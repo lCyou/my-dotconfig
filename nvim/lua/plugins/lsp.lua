@@ -127,6 +127,29 @@ return {
         end,
       })
 
+      -- Nixファイルを開いたときに自動起動
+      vim.api.nvim_create_autocmd("FileType", {
+        pattern = { "nix" },
+        callback = function()
+          vim.lsp.enable("nixd")
+        end,
+      })
+
+      -- nixd の設定
+      vim.lsp.config.nixd = {
+        cmd = { "nixd" },
+        filetypes = { "nix" },
+        root_markers = { "flake.nix", ".git" },
+        capabilities = capabilities,
+        settings = {
+          nixd = {
+            formatting = {
+              command = { "nixfmt" },
+            },
+          },
+        },
+      }
+
       -- rust-analyzer の設定
       vim.lsp.config.rust_analyzer = {
         cmd = { "rust-analyzer" },
