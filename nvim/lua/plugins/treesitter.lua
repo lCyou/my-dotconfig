@@ -1,8 +1,11 @@
 local nix_grammars = vim.env.TREESITTER_GRAMMARS
+-- Only treat the Nix path as valid when compiled parsers are actually present
+local has_nix_parsers = nix_grammars ~= nil
+    and vim.fn.isdirectory(nix_grammars .. "/parser") == 1
 
 local ts_opts = {
-    auto_install = nix_grammars == nil,
-    ensure_installed = nix_grammars and {} or {
+    auto_install = not has_nix_parsers,
+    ensure_installed = has_nix_parsers and {} or {
         "java", "rust", "typescript", "tsx",
         "lua", "vim", "vimdoc", "query",
         "markdown", "markdown_inline", "bash", "json"
@@ -18,8 +21,8 @@ local ts_opts = {
 
 local M = {
     "nvim-treesitter/nvim-treesitter",
-    dir = nix_grammars,
-    build = nix_grammars and false or ":TSUpdate",
+    dir = has_nix_parsers and nix_grammars or nil,
+    build = has_nix_parsers and false or ":TSUpdate",
 }
 
 M.config = function()

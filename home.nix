@@ -11,6 +11,7 @@ in {
   home.sessionPath = [
     "$HOME/.local/bin"
     "$HOME/.claude/bin"
+    "$HOME/go/bin"
   ];
 
   home.packages = with pkgs; [
@@ -19,7 +20,8 @@ in {
     bat eza fd ripgrep tree jq
     ghq lazygit gnused
     gcc gnumake cmake automake lua
-    deno pnpm yarn maven dart terraform act
+    go
+    nodejs deno pnpm yarn maven dart terraform act
     supabase-cli switchaudio-osx ngrok
     cloudflared docker colima
     wezterm
