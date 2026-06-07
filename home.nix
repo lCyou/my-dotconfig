@@ -22,6 +22,7 @@ in {
     gcc gnumake cmake automake lua
     go
     nodejs deno pnpm yarn maven dart terraform act
+    jdk21 gradle
     supabase-cli switchaudio-osx ngrok
     cloudflared docker colima
     wezterm
@@ -37,6 +38,10 @@ in {
       "${pkgs.vimPlugins.telescope-fzf-native-nvim}"
       "--set" "TREESITTER_GRAMMARS"
       "${pkgs.vimPlugins.nvim-treesitter.withAllGrammars}"
+      "--set" "JAVA_DEBUG_DIR"
+      "${pkgs.vscode-extensions.vscjava.vscode-java-debug}/share/vscode/extensions/vscjava.vscode-java-debug/server"
+      "--set" "LOMBOK_JAR"
+      "${pkgs.lombok}/share/java/lombok.jar"
     ];
     extraPackages = with pkgs; [
       typescript-language-server
@@ -46,6 +51,11 @@ in {
       nixd
       nixfmt-rfc-style
       statix
+      # Java
+      jdt-language-server
+      google-java-format
+      vscode-extensions.vscjava.vscode-java-debug
+      lombok
     ];
   };
 
@@ -54,6 +64,7 @@ in {
   home.sessionVariables = {
     EDITOR = "nvim";
     VISUAL = "nvim";
+    JAVA_HOME = "${pkgs.jdk21}";
   };
 
   programs.fzf.enable    = true;
