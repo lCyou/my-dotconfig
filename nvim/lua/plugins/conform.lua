@@ -18,6 +18,7 @@ return {
         lua = { "stylua" },
         rust = { "rustfmt" },
         nix = { "nixfmt" },
+        java = { "google-java-format" },
       },
 
       -- フォーマッターの設定
@@ -26,6 +27,10 @@ return {
           command = "prettier",
           args = { "--stdin-filepath", "$FILENAME" },
         },
+        ["google-java-format"] = {
+          command = "google-java-format",
+          args = { "-" },
+        },
       },
 
       -- フォーマットオプション
@@ -33,8 +38,11 @@ return {
         local filetype = vim.bo[bufnr].filetype
         if filetype == "rust" then
           return { timeout_ms = 500, lsp_fallback = true }
+        elseif filetype == "java" then
+          -- JVM 起動のため長めのタイムアウト
+          return { timeout_ms = 2000, lsp_fallback = false }
         end
-        return nil  
+        return nil
       end,
     })
 
