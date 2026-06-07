@@ -2,8 +2,6 @@
 
 nix-darwin + home-manager で macOS (M1 MacBook Air) の環境を管理するドットファイルリポジトリ。
 
-- **ホスト**: `lcyou-mac-air-m1` (aarch64-darwin)
-- **ユーザー**: `lcyou`
 - **Nix**: Determinate Nix (nix 2.34.6)
 
 ## セットアップ
