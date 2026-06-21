@@ -1,6 +1,21 @@
 { pkgs, lib, ... }: {
   nix.enable = false;
 
+  homebrew = {
+    enable = true;
+    onActivation = {
+      cleanup = "zap";    # 宣言にないものを削除
+      autoUpdate = false;
+      upgrade = false;
+    };
+    brews = [
+      # "example-formula"
+    ];
+    casks = [
+      "wezterm"
+    ];
+  };
+
   programs.zsh.enable = true;
   system.stateVersion = 5;
   system.primaryUser = "lcyou";

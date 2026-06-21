@@ -9,9 +9,12 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    nix-homebrew = {
+      url = "github:zhaofengli/nix-homebrew";
+    };
   };
 
-  outputs = { nix-darwin, home-manager, nixpkgs, ... }: {
+  outputs = { nix-darwin, home-manager, nixpkgs, nix-homebrew, ... }: {
     darwinConfigurations."lcyou-mac-air-m1" = nix-darwin.lib.darwinSystem {
       system = "aarch64-darwin";
       modules = [
@@ -21,6 +24,15 @@
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
           home-manager.users.lcyou = import ./home.nix;
+        }
+        nix-homebrew.darwinModules.nix-homebrew
+        {
+          nix-homebrew = {
+            enable = true;
+            enableRosetta = true;
+            user = "lcyou";
+            mutableTaps = true;
+          };
         }
       ];
     };

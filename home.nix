@@ -25,7 +25,6 @@ in {
     jdk21 gradle
     supabase-cli switchaudio-osx ngrok
     cloudflared docker colima
-    wezterm
     nerd-fonts.hack
     nerd-fonts.jetbrains-mono
     pkgs.jankyborders
