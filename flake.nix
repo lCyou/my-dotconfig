@@ -18,22 +18,15 @@
     darwinConfigurations."lcyou-mac-air-m1" = nix-darwin.lib.darwinSystem {
       system = "aarch64-darwin";
       modules = [
-        ./darwin.nix
+        ./nix/darwin.nix
         home-manager.darwinModules.home-manager
         {
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
-          home-manager.users.lcyou = import ./home.nix;
+          home-manager.users.lcyou = import ./nix/home;
         }
         nix-homebrew.darwinModules.nix-homebrew
-        {
-          nix-homebrew = {
-            enable = true;
-            enableRosetta = true;
-            user = "lcyou";
-            mutableTaps = true;
-          };
-        }
+        ./nix/homebrew
       ];
     };
   };
