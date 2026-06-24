@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, herdr, ... }:
 let
   nr = pkgs.writeShellScriptBin "nr" ''
     exec darwin-rebuild switch --flake ~/.config/nix-darwin "$@"
@@ -6,19 +6,28 @@ let
 in {
   home.packages = with pkgs; [
     nr
-    git
-    bat eza fd ripgrep tree jq
+
+    # CLI
+    git bat eza fd ripgrep tree jq
     ghq lazygit gnused
+
+    # Build tools
     gcc gnumake cmake automake lua
-    go
-    nodejs deno pnpm yarn maven dart terraform act
-    jdk21 gradle
-    supabase-cli switchaudio-osx ngrok
-    cloudflared docker colima
-    nerd-fonts.hack
-    nerd-fonts.jetbrains-mono
-    pkgs.jankyborders
-    zsh-autosuggestions
-    zsh-syntax-highlighting
+
+    # Languages / runtimes
+    go nodejs deno pnpm yarn maven dart
+    jdk21 gradle terraform act
+
+    # Cloud / infra
+    supabase-cli cloudflared docker colima ngrok
+
+    # macOS utilities
+    switchaudio-osx
+
+    # Fonts
+    nerd-fonts.hack nerd-fonts.jetbrains-mono
+
+    # External flakes
+    herdr.packages.aarch64-darwin.default
   ];
 }

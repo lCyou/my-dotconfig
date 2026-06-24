@@ -13,11 +13,14 @@
       autoUpdate = false;
       upgrade = false;
     };
+    taps = [
+      "nikitabobko/tap"
+    ];
     brews = [
       # "example-formula"
     ];
     casks = [
-      "aerospace"
+      "nikitabobko/tap/aerospace"
       "wezterm"
     ];
   };

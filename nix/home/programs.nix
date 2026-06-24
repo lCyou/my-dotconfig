@@ -1,37 +1,10 @@
-{ lib, pkgs, ... }: {
-  programs.neovim = {
-    enable = true;
-    extraWrapperArgs = [
-      "--set" "TELESCOPE_FZF_NATIVE"
-      "${pkgs.vimPlugins.telescope-fzf-native-nvim}"
-      "--set" "TREESITTER_GRAMMARS"
-      "${pkgs.vimPlugins.nvim-treesitter.withAllGrammars}"
-      "--set" "JAVA_DEBUG_DIR"
-      "${pkgs.vscode-extensions.vscjava.vscode-java-debug}/share/vscode/extensions/vscjava.vscode-java-debug/server"
-      "--set" "LOMBOK_JAR"
-      "${pkgs.lombok}/share/java/lombok.jar"
-    ];
-    extraPackages = with pkgs; [
-      typescript-language-server
-      rust-analyzer
-      prettier
-      stylua
-      nixd
-      nixfmt-rfc-style
-      statix
-      jdt-language-server
-      google-java-format
-      vscode-extensions.vscjava.vscode-java-debug
-      lombok
-    ];
-  };
+{ ... }: {
+  imports = [ ./programs/neovim.nix ];
 
-  xdg.configFile."nvim/init.lua".enable = lib.mkForce false;
-
-  programs.fzf.enable    = true;
-  programs.zoxide.enable = true;
-  programs.gh.enable     = true;
-  programs.tmux.enable   = true;
+  programs.fzf.enable     = true;
+  programs.zoxide.enable  = true;
+  programs.gh.enable      = true;
+  programs.tmux.enable    = true;
   programs.starship.enable = true;
-  programs.zsh.enable    = true;
+  programs.zsh.enable     = true;
 }
