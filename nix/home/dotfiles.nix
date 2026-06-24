@@ -17,4 +17,5 @@
 
   xdg.configFile."borders/bordersrc".source = ../../borders/bordersrc;
   xdg.configFile."starship.toml".source = ../../starship.toml;
+  xdg.configFile."herdr/config.toml".source = ../../herdr/config.toml;
 }

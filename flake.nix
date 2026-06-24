@@ -12,9 +12,12 @@
     nix-homebrew = {
       url = "github:zhaofengli/nix-homebrew";
     };
+    herdr = {
+      url = "github:ogulcancelik/herdr";
+    };
   };
 
-  outputs = { nix-darwin, home-manager, nixpkgs, nix-homebrew, ... }: {
+  outputs = { nix-darwin, home-manager, nixpkgs, nix-homebrew, herdr, ... }: {
     darwinConfigurations."lcyou-mac-air-m1" = nix-darwin.lib.darwinSystem {
       system = "aarch64-darwin";
       modules = [
@@ -24,6 +27,7 @@
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
           home-manager.users.lcyou = import ./nix/home;
+          home-manager.extraSpecialArgs = { inherit herdr; };
         }
         nix-homebrew.darwinModules.nix-homebrew
         ./nix/homebrew
