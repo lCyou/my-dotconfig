@@ -8,7 +8,7 @@ in {
     nr
 
     # CLI
-    git bat eza fd ripgrep tree jq
+    bat eza fd ripgrep tree jq
     ghq lazygit gnused
 
     # Build tools
