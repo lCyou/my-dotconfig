@@ -1,5 +1,8 @@
 { ... }: {
-  imports = [ ./programs/neovim.nix ];
+  imports = [
+    ./programs/neovim.nix
+    ./programs/git.nix
+  ];
 
   programs.fzf.enable     = true;
   programs.zoxide.enable  = true;
