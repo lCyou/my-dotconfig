@@ -10,6 +10,7 @@ in {
     # CLI
     bat eza fd ripgrep tree jq
     ghq lazygit gnused
+    ec # git conflict resolver (easy-conflict)
 
     # Build tools
     gcc gnumake cmake automake lua
