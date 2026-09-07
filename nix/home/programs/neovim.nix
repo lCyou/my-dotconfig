@@ -1,6 +1,8 @@
 { lib, pkgs, ... }: {
   programs.neovim = {
     enable = true;
+    withRuby = true;
+    withPython3 = true;
     extraWrapperArgs = [
       "--set" "TELESCOPE_FZF_NATIVE"
       "${pkgs.vimPlugins.telescope-fzf-native-nvim}"
@@ -17,7 +19,7 @@
       prettier
       stylua
       nixd
-      nixfmt-rfc-style
+      nixfmt
       statix
       jdt-language-server
       google-java-format

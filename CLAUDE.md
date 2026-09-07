@@ -89,6 +89,14 @@ UDEV Gothic NF は nix 管理外（手動インストール or Homebrew と推�
 `nix-darwin/` ディレクトリは旧設定（ユーザー `kyou`、ホスト `lCyouMac`）。
 現在は使われていないが、混乱の原因になる可能性がある。
 
+### 5. Rosetta 未インストール警告（nix設定側では直せない）
+
+`sudo darwin-rebuild switch` で `Warning: The Intel Homebrew prefix has been set up, but Rosetta isn't installed yet.` が出る。`nix-homebrew.enableRosetta = true`（`nix/homebrew/default.nix`）はIntel用Homebrewプレフィックスを有効化するだけで、Rosetta 2本体のインストールは行わない。直すには一度だけ手動で `softwareupdate --install-rosetta --agree-to-license` を実行する必要がある（2026-09-08時点で未実行）。
+
+### 6. `brew bundle --cleanup` 非推奨警告（nix-darwinのバージョン追従待ち）
+
+`Warning: Calling the --cleanup switch is deprecated! There is no replacement.` が出る。原因はHomebrew CLI側が `brew bundle install --cleanup` を廃止し `--force-cleanup` に変更したのに対し、`flake.lock` で固定している nix-darwin (`8c62fba`, 2026-05-03) がまだ追従していないこと。上流は nix-darwin PR #1789（2026-06-17マージ）で対応済みだが、そのコミットを含む新しい nix-darwin (`4cff07d` 以降) は release branch チェックが厳格化されており、`nixpkgs-unstable` を使う現在の `flake.nix` の組み合わせだと `nix-darwin 26.11 with Nixpkgs 26.05` のミスマッチでビルドが失敗する（2026-09-08に `nix flake lock --update-input nix-darwin` で確認済み、要 revert）。nix-darwin と nixpkgs を対応するブランチに揃えて同時に上げるまでは、単なる警告として無害（ビルド自体は失敗しない）なので保留でよい。急ぐ場合の代替案として `homebrew.onActivation.cleanup = "none"` にすれば警告は消えるが、Brewfile外のcask/formulaを自動アンインストールする機能を失うトレードオフがある。
+
 ---
 
 ## 今後やるべきタスク
