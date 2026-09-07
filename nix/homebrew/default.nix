@@ -20,7 +20,7 @@
       # "example-formula"
     ];
     casks = [
-      "nikitabobko/tap/aerospace"
+      # "nikitabobko/tap/aerospace" # 一時的に無効化。TODO参照
       "wezterm"
     ];
   };
