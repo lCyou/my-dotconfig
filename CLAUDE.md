@@ -15,99 +15,76 @@ nix-darwin + home-manager で macOS (M1 MacBook Air) の環境を管理するリ
 
 ## ディレクトリ構成と各設定の役割
 
+> `home.nix` 単一ファイル構成から `nix/` 配下への分割構成に移行済み（このセクションは実体に追従させること）。
+
 | パス | 管理方法 | 備考 |
 |------|---------|------|
-| `flake.nix` | nix-darwin エントリポイント | ルートの flake が現在の有効設定 |
-| `darwin.nix` | nix-darwin システム設定 | `nix.enable = false`（Determinate Nix が管理）|
-| `home.nix` | home-manager 設定 | パッケージ・プログラム・シンボリックリンク管理 |
-| `nix-darwin/` | **旧設定（未使用）** | ホスト名 `lCyouMac`、ユーザー `kyou` の旧設定 |
-| `aerospace/aerospace.toml` | `home.file` で `~/.aerospace.toml` に配置 | 動作確認済み |
-| `borders/bordersrc` | `xdg.configFile` で `~/.config/borders/bordersrc` に配置 | 動作確認済み |
-| `nvim/` | activation script でシンボリックリンク | **問題あり（後述）** |
-| `wezterm/` | activation script でシンボリックリンク | 動作確認済み |
-| `starship.toml` | `programs.starship.settings` で読み込み | `~/.config/starship.toml` にシンボリックリンク済み |
+| `flake.nix` | nix-darwin エントリポイント | `herdr`（GitHub flake input）を含む。ルートの flake が現在の有効設定 |
+| `nix/darwin.nix` | nix-darwin システム設定 | `nix.enable = false`（Determinate Nix が管理）。`launchd.user.agents.jankyborders` で jankyborders をバックグラウンド起動 |
+| `nix/home/default.nix` | home-manager エントリ | `packages.nix` / `programs.nix` / `dotfiles.nix` を import |
+| `nix/home/packages.nix` | `home.packages` | CLI・開発ツール一式 + `herdr` パッケージ |
+| `nix/home/programs.nix`, `nix/home/programs/*.nix` | `programs.*` 設定 | fzf, zoxide, gh, tmux, starship, zsh, neovim, git |
+| `nix/home/dotfiles.nix` | `home.activation` + `xdg.configFile` | nvim/wezterm/aerospace のシンボリックリンク、borders/starship/herdr の configFile 配置 |
+| `nix/homebrew/default.nix` | `nix-homebrew` + `homebrew` モジュール | Homebrew tap/cask の宣言的管理（下記参照）|
+| `nix-darwin/` | **旧設定（未使用）** | ホスト名 `lCyouMac`、ユーザー `kyou` の旧設定。整理未着手 |
+| `aerospace/aerospace.toml` | `home.activation` でシンボリックリンク配置 | 動作確認済み |
+| `borders/bordersrc` | `xdg.configFile` で `~/.config/borders/bordersrc` に配置 | 起動自体は `nix/darwin.nix` の launchd agent が担当 |
+| `nvim/` | `home.activation` で `rm -rf` 後にシンボリックリンク | `~/.config/nvim` 自体がリンクになっている。加えて `nix/home/programs/neovim.nix` で `xdg.configFile."nvim/init.lua".enable = lib.mkForce false` により home-manager 自身の init.lua 生成を無効化 |
+| `wezterm/` | `home.activation` でシンボリックリンク | 設定ファイルは動作確認済み。`wezterm` 本体は home.packages ではなく `nix/homebrew` の cask で管理 |
+| `herdr/config.toml` | `xdg.configFile` で `~/.config/herdr/config.toml` に配置 | ターミナルワークスペースマネージャ herdr の設定。onboarding無効化・theme固定・CJK入力対応・sidebar複数行表示を設定済み |
+| `starship.toml` | `xdg.configFile` | `~/.config/starship.toml` にシンボリックリンク済み |
 | `gh/config.yml` | `programs.gh.enable` で管理 | `hosts.yml` は nix 管理外 |
 | `configstore/` | nix 管理外 | 各 CLI ツールの自動生成ファイル |
 | `starship/`, `tmux/`, `zsh/` | 空ディレクトリ | 将来の設定ファイル置き場として存在 |
 
 ---
 
-## 現在インストール済みのパッケージ（home.nix）
+## 現在インストール済みのパッケージ（`nix/home/packages.nix` ほか）
 
 ### CLI ツール
-`git`, `bat`, `eza`, `fd`, `ripgrep`, `tree`, `jq`, `ghq`, `lazygit`, `gnused`
+`git`, `bat`, `eza`, `fd`, `ripgrep`, `tree`, `jq`, `ghq`, `lazygit`, `gnused`, `nr`（`darwin-rebuild switch` のラッパー）
 
 ### 開発ツール
-`gcc`, `cmake`, `automake`, `lua`, `deno`, `pnpm`, `yarn`, `maven`, `dart`, `terraform`, `act`
+`gcc`, `gnumake`, `cmake`, `automake`, `lua`, `go`, `nodejs`, `deno`, `pnpm`, `yarn`, `maven`, `dart`, `jdk21`, `gradle`, `terraform`, `act`
 
 ### インフラ / クラウド
 `supabase-cli`, `cloudflared`, `docker`, `colima`, `ngrok`
 
 ### macOS GUI / ユーティリティ
-`switchaudio-osx`, `sketchybar`, `aerospace`, `pkgs.jankyborders`
+`switchaudio-osx`（`home.packages`）、`jankyborders`（`nix/darwin.nix` の launchd agent 経由）、`aerospace`（Homebrew cask、`nix/homebrew`。upstream不具合で一時無効化中）
+
+### ターミナル / マルチプレクサ
+`herdr`（`home.packages` + `herdr/config.toml`）、`wezterm`（Homebrew cask、`nix/homebrew`）
 
 ### フォント
 `nerd-fonts.hack`, `nerd-fonts.jetbrains-mono`
 
 ### programs（home-manager で設定込み管理）
-`fzf`, `zoxide`, `gh`, `tmux`, `starship`, `neovim`, `zsh`（プラグイン: autosuggestions, syntax-highlighting）
+`fzf`, `zoxide`, `gh`, `tmux`, `starship`, `neovim`, `zsh`（プラグイン: autosuggestions, syntax-highlighting）、
+`git`（`nix/home/programs/git.nix`。user/email, merge.conflictstyle, diff.colorMoved を設定）、
+`delta`（git用ページャ。`enableGitIntegration = true`）
 
 ---
 
-## 設定が反映されていない原因
+## 既知の問題・未解決事項
 
-### 1. nvim シンボリックリンクの競合（重要）
-
-`home.nix` の activation script で `ln -sfn .../nvim ~/.config/nvim` を実行しているが、
-home-manager が先に `~/.config/nvim/` ディレクトリを作成し `init.lua` を配置するため、
-`ln -sfn` がディレクトリ内にシンボリックリンクを作ってしまっている。
-
-**現状の実際のファイル構成**:
-```
-~/.config/nvim/
-  init.lua -> /nix/store/.../init.lua  (home-manager が生成した stub)
-  nvim/    -> ~/ghq/.../nvim           (activation script が誤配置したリンク)
-```
-
-**本来あるべき構成**: `~/.config/nvim` 自体が `~/ghq/.../nvim` へのシンボリックリンク
-
-**修正方法**:
-```nix
-home.activation.nvimConfig = lib.hm.dag.entryAfter ["writeBoundary"] ''
-  rm -rf "${config.xdg.configHome}/nvim"
-  $DRY_RUN_CMD ln -sfn \
-    "${config.home.homeDirectory}/ghq/github.com/lCyou/my-dotconfig/nvim" \
-    "${config.xdg.configHome}/nvim"
-'';
-```
-
-### 2. WezTerm が nix 管理外
-
-`wezterm` バイナリが PATH に存在しない（`which wezterm` で not found）。
-現在は Homebrew Cask の `/Applications/WezTerm.app` が使われている。
-`home.nix` に `wezterm` パッケージは含まれていない（旧 `nix-darwin/home.nix` には含まれていた）。
-
-### 3. UDEV Gothic NF フォントが未管理
+### 1. UDEV Gothic NF フォントが未管理
 
 `wezterm/wezterm.lua` で `UDEV Gothic NF` を使用しているが、
-`home.nix` には `nerd-fonts.hack` と `nerd-fonts.jetbrains-mono` しかなく、
+`nix/home/packages.nix` には `nerd-fonts.hack` と `nerd-fonts.jetbrains-mono` しかなく、
 UDEV Gothic NF は nix 管理外（手動インストール or Homebrew と推測）。
 
-### 4. zsh の設定が空
+### 2. zsh の設定が空
 
 `~/.zshrc` は home-manager が生成したもの（nix store 内）のみで、
 `zsh/` ディレクトリは空。エイリアスや追加設定を `programs.zsh.initContent` で管理していない。
-また `~/.zshrch`（タイポ？）に `# zshrc` とだけ書かれたファイルが存在する。
+また `~/.zshrch`（タイポ）というファイルが存在する（nix管理外、手動で作られたもの）。
 
-### 5. tmux 設定が空
+### 3. tmux 設定が空
 
 `programs.tmux.enable = true` だが `tmux/` ディレクトリは空で、tmux の設定が何もない。
 
-### 6. sketchybar 設定が未管理
-
-`sketchybar` バイナリはインストール済みだが、設定ファイルが存在しない。
-
-### 7. 旧設定ディレクトリが残存
+### 4. 旧設定ディレクトリが残存
 
 `nix-darwin/` ディレクトリは旧設定（ユーザー `kyou`、ホスト `lCyouMac`）。
 現在は使われていないが、混乱の原因になる可能性がある。
@@ -119,21 +96,17 @@ UDEV Gothic NF は nix 管理外（手動インストール or Homebrew と推�
 ### 高優先度
 
 - [ ] **aerospace caskの復活**: `nikitabobko/tap/aerospace` を `nix/homebrew/default.nix` で一時的に無効化中（2026-09-08）。原因は upstream (nikitabobko/homebrew-tap) 側の2026-09-06コミット `9ac0bfc "Migrate off the deprecated postflight ruby blocks"` で、`postflight_steps` 内の `#{version}` をプレースホルダー化し忘れたバグ（`undefined local variable or method 'version'` で `brew bundle` が失敗し `darwin-rebuild switch` が完了しない）。upstream修正を確認したら `casks` のコメントを解除する。
-- [ ] **nvim シンボリックリンクの修正**: activation script に `rm -rf` を追加して `~/.config/nvim` を正しくシンボリックリンクに変更する
-- [ ] **WezTerm を nix 管理に移行**: `home.packages` に `wezterm` を追加、または Homebrew Cask のままにするか方針を決める
 - [ ] **UDEV Gothic NF フォントの管理**: nix で管理できる場合は追加（`nerd-fonts.udev-gothic`など）、できなければ Homebrew Cask で管理
 
 ### 中優先度
 
 - [ ] **zsh 設定の整備**: エイリアス・カスタム設定を `programs.zsh.initContent` に移行、`~/.zshrch`（タイポファイル）を削除または整理
 - [ ] **tmux 設定の追加**: `programs.tmux` に設定を追加するか `tmux/` にファイルを置いて home-manager で管理
-- [ ] **sketchybar 設定の追加**: 設定ファイルを作成して `xdg.configFile` で管理
 - [ ] **旧設定 `nix-darwin/` の整理**: 参照用に残すか削除するか決める
 
 ### 低優先度 / 将来の拡張
 
 - [ ] **macOS システム設定の追加**: `darwin.nix` に `system.defaults` でキーボード・トラックパッド・Dock 設定を追加
-- [ ] **Homebrew の nix 管理**: `nix-darwin` の `homebrew` モジュールで `brew install` / `brew install --cask` を宣言的に管理
 - [ ] **gh hosts.yml の管理**: `~/.config/gh/hosts.yml` を nix で管理（認証トークンを含むため secrets 管理が必要）
 - [ ] **configstore/ の整理**: gitignore するか nix で管理するか決める
 
@@ -145,9 +118,11 @@ UDEV Gothic NF は nix 管理外（手動インストール or Homebrew と推�
 # 設定を適用
 darwin-rebuild switch --flake ~/.config/nix-darwin
 
-# dry-run で確認
+# dry-run で確認（sudo不要、評価・ビルドエラーの検出に使える）
 darwin-rebuild build --flake ~/.config/nix-darwin
-
-# home-manager のみ再適用（nix-darwin なしで単体実行）
-home-manager switch --flake ~/.config/nix-darwin
 ```
+
+> home-manager は `flake.nix` で nix-darwin のモジュールとして組み込まれており、
+> スタンドアロンの `home-manager` コマンドは存在しない（`command not found`）。
+> home-manager 管理下の設定（`nix/home/`）だけを変更した場合も、反映には
+> `darwin-rebuild switch` の実行が必要。
