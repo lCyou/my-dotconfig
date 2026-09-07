@@ -8,6 +8,7 @@
   home.username = "lcyou";
   home.homeDirectory = "/Users/lcyou";
   home.stateVersion = "24.11";
+  manual.manpages.enable = false;
 
   home.sessionPath = [
     "$HOME/.local/bin"

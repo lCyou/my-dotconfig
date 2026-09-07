@@ -1,5 +1,6 @@
 { pkgs, ... }: {
   nix.enable = false;
+  documentation.man.enable = false;
 
   programs.zsh.enable = true;
   system.stateVersion = 5;
