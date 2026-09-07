@@ -118,6 +118,7 @@ UDEV Gothic NF は nix 管理外（手動インストール or Homebrew と推�
 
 ### 高優先度
 
+- [ ] **aerospace caskの復活**: `nikitabobko/tap/aerospace` を `nix/homebrew/default.nix` で一時的に無効化中（2026-09-08）。原因は upstream (nikitabobko/homebrew-tap) 側の2026-09-06コミット `9ac0bfc "Migrate off the deprecated postflight ruby blocks"` で、`postflight_steps` 内の `#{version}` をプレースホルダー化し忘れたバグ（`undefined local variable or method 'version'` で `brew bundle` が失敗し `darwin-rebuild switch` が完了しない）。upstream修正を確認したら `casks` のコメントを解除する。
 - [ ] **nvim シンボリックリンクの修正**: activation script に `rm -rf` を追加して `~/.config/nvim` を正しくシンボリックリンクに変更する
 - [ ] **WezTerm を nix 管理に移行**: `home.packages` に `wezterm` を追加、または Homebrew Cask のままにするか方針を決める
 - [ ] **UDEV Gothic NF フォントの管理**: nix で管理できる場合は追加（`nerd-fonts.udev-gothic`など）、できなければ Homebrew Cask で管理
