@@ -1,5 +1,55 @@
+# First-run setup wizard is unnecessary here; also avoids the
+# "failed to save onboarding setting" error (config.toml is a read-only
+# nix-store symlink, so herdr can never persist onboarding completion).
+onboarding = false
+
+[theme]
+name = "terminal"
+auto_switch = false
+
 [ui]
 agent_panel_sort = "spaces"
 
+# herdr only draws real box-drawing tree connectors (├─/└─/│) automatically
+# for git-worktree-linked workspaces (see `herdr worktree`); rows cannot
+# contain literal text, only these named tokens, so a second row per entry
+# is the closest a plain config gets to a tree-style breakdown.
+[ui.sidebar.spaces]
+row_gap = 0
+rows = [
+  [
+    { token = "state_icon" },
+    { token = "workspace", bold = true },
+  ],
+  [
+    { token = "branch", fg = "#89b4fa" },
+    { token = "git_status", fg = "#f9e2af" },
+  ],
+]
+
+[ui.sidebar.agents]
+row_gap = 0
+rows = [
+  [
+    { token = "state_icon" },
+    { token = "workspace" },
+    { token = "tab" },
+  ],
+  [
+    { token = "agent", bold = true },
+    { token = "state_text" },
+  ],
+  [
+    { token = "terminal_title_stripped", dim = true },
+  ],
+]
+
 [ui.toast]
 delivery = "terminal"
+
+[experimental]
+# Keep the IME candidate window tracking the cursor for CJK (Japanese) input
+# in agent panes, and let prefix-mode keys register while an IME is active.
+switch_ascii_input_source_in_prefix = true
+reveal_hidden_cursor_for_cjk_ime = true
+cjk_ime_agents = ["claude", "codex"]
