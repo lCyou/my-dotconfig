@@ -21,6 +21,7 @@ in {
 
     # Cloud / infra
     supabase-cli cloudflared docker colima ngrok
+    kind kubectl
 
     # macOS utilities
     switchaudio-osx
