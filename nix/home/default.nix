@@ -1,12 +1,12 @@
-{ pkgs, ... }: {
+{ pkgs, host, ... }: {
   imports = [
     ./packages.nix
     ./programs.nix
     ./dotfiles.nix
   ];
 
-  home.username = "lcyou";
-  home.homeDirectory = "/Users/lcyou";
+  home.username = host.user;
+  home.homeDirectory = host.homeDirectory;
   home.stateVersion = "24.11";
   manual.manpages.enable = false;
 

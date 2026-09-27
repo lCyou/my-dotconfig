@@ -17,21 +17,25 @@
     };
   };
 
-  outputs = { nix-darwin, home-manager, nixpkgs, nix-homebrew, herdr, ... }: {
-    darwinConfigurations."lcyou-mac-air-m1" = nix-darwin.lib.darwinSystem {
-      system = "aarch64-darwin";
-      modules = [
-        ./nix/darwin.nix
-        home-manager.darwinModules.home-manager
-        {
-          home-manager.useGlobalPkgs = true;
-          home-manager.useUserPackages = true;
-          home-manager.users.lcyou = import ./nix/home;
-          home-manager.extraSpecialArgs = { inherit herdr; };
-        }
-        nix-homebrew.darwinModules.nix-homebrew
-        ./nix/homebrew
-      ];
+  outputs = { nix-darwin, home-manager, nixpkgs, nix-homebrew, herdr, ... }:
+    let
+      host = import ./hosts/lcyou-mac-air-m1.nix;
+    in {
+      darwinConfigurations.${host.hostname} = nix-darwin.lib.darwinSystem {
+        inherit (host) system;
+        specialArgs = { inherit host; };
+        modules = [
+          ./nix/darwin.nix
+          home-manager.darwinModules.home-manager
+          {
+            home-manager.useGlobalPkgs = true;
+            home-manager.useUserPackages = true;
+            home-manager.users.${host.user} = import ./nix/home;
+            home-manager.extraSpecialArgs = { inherit host herdr; };
+          }
+          nix-homebrew.darwinModules.nix-homebrew
+          ./nix/homebrew
+        ];
+      };
     };
-  };
 }

@@ -1,17 +1,17 @@
-{ config, lib, ... }: {
+{ config, lib, host, ... }: {
   home.activation.dotfileLinks = lib.hm.dag.entryAfter ["writeBoundary"] ''
     rm -rf "${config.xdg.configHome}/nvim"
     $DRY_RUN_CMD ln -sfn \
-      "${config.home.homeDirectory}/ghq/github.com/lCyou/my-dotconfig/nvim" \
+      "${host.dotfilesPath}/nvim" \
       "${config.xdg.configHome}/nvim"
 
     rm -rf "${config.xdg.configHome}/wezterm"
     $DRY_RUN_CMD ln -sfn \
-      "${config.home.homeDirectory}/ghq/github.com/lCyou/my-dotconfig/wezterm" \
+      "${host.dotfilesPath}/wezterm" \
       "${config.xdg.configHome}/wezterm"
 
     $DRY_RUN_CMD ln -sfn \
-      "${config.home.homeDirectory}/ghq/github.com/lCyou/my-dotconfig/aerospace/aerospace.toml" \
+      "${host.dotfilesPath}/aerospace/aerospace.toml" \
       "${config.home.homeDirectory}/.aerospace.toml"
   '';
 
