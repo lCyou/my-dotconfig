@@ -1,7 +1,7 @@
 { ... }: {
   imports = [
-    ./programs/neovim.nix
-    ./programs/git.nix
+    ./neovim.nix
+    ./git.nix
   ];
 
   programs.fzf.enable     = true;

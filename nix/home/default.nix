@@ -1,7 +1,7 @@
 { pkgs, host, ... }: {
   imports = [
     ./packages.nix
-    ./programs.nix
+    ./programs
     ./dotfiles.nix
   ];
 
