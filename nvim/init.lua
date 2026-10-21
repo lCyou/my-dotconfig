@@ -4,6 +4,7 @@ vim.g.mapleader = " "
 require('core')
 require('keymap')
 require('plugin')
+require('keylogger')
 require("config.lazy")
 
 vim.opt.guicursor = "a:block" -- cursorをブロック表示にする
