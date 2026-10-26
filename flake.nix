@@ -25,16 +25,17 @@
         inherit (host) system;
         specialArgs = { inherit host; };
         modules = [
-          ./nix/darwin.nix
+          ./nix/darwin
           home-manager.darwinModules.home-manager
           {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
+            # 既存の手動 symlink 等と衝突した場合は *.hm-bak に退避する
+            home-manager.backupFileExtension = "hm-bak";
             home-manager.users.${host.user} = import ./nix/home;
             home-manager.extraSpecialArgs = { inherit host herdr; };
           }
           nix-homebrew.darwinModules.nix-homebrew
-          ./nix/homebrew
         ];
       };
     };
