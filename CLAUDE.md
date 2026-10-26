@@ -15,27 +15,26 @@ nix-darwin + home-manager で macOS (M1 MacBook Air) の環境を管理するリ
 
 ## ディレクトリ構成と各設定の役割
 
-> `home.nix` 単一ファイル構成から `nix/` 配下への分割構成に移行済み（このセクションは実体に追従させること）。
+> 層で分割: `hosts/`（マシン固有値）/ `nix/`（Nix モジュール）/ `config/`（アプリ設定の実体）。このセクションは実体に追従させること。
 
 | パス | 管理方法 | 備考 |
 |------|---------|------|
-| `flake.nix` | nix-darwin エントリポイント | `herdr`（GitHub flake input）を含む。ルートの flake が現在の有効設定 |
-| `nix/darwin.nix` | nix-darwin システム設定 | `nix.enable = false`（Determinate Nix が管理）。`launchd.user.agents.jankyborders` で jankyborders をバックグラウンド起動 |
-| `nix/home/default.nix` | home-manager エントリ | `packages.nix` / `programs.nix` / `dotfiles.nix` を import |
+| `flake.nix` | nix-darwin エントリポイント | `herdr`（GitHub flake input）を含む。`hosts/*.nix` を読み込み `host` として specialArgs / extraSpecialArgs で配布。`home-manager.backupFileExtension = "hm-bak"` |
+| `hosts/lcyou-mac-air-m1.nix` | ホスト固有値 | `hostname`, `system`, `user`, `homeDirectory`, `dotfilesPath`。ユーザー名やパスは直書きせずここを参照する |
+| `nix/darwin/default.nix` | nix-darwin システム設定 | `nix.enable = false`（Determinate Nix が管理）。`launchd.nix` / `homebrew.nix` を import |
+| `nix/darwin/launchd.nix` | `launchd.user.agents` | jankyborders をバックグラウンド起動 |
+| `nix/darwin/homebrew.nix` | `nix-homebrew` + `homebrew` モジュール | Homebrew tap/cask の宣言的管理 |
+| `nix/home/default.nix` | home-manager エントリ | `packages.nix` / `programs` / `dotfiles.nix` を import。PATH・環境変数 |
 | `nix/home/packages.nix` | `home.packages` | CLI・開発ツール一式 + `herdr` パッケージ |
-| `nix/home/programs.nix`, `nix/home/programs/*.nix` | `programs.*` 設定 | fzf, zoxide, gh, tmux, starship, zsh, neovim, git |
-| `nix/home/dotfiles.nix` | `home.activation` + `xdg.configFile` | nvim/wezterm/aerospace のシンボリックリンク、borders/starship/herdr の configFile 配置 |
-| `nix/homebrew/default.nix` | `nix-homebrew` + `homebrew` モジュール | Homebrew tap/cask の宣言的管理（下記参照）|
-| `nix-darwin/` | **旧設定（未使用）** | ホスト名 `lCyouMac`、ユーザー `kyou` の旧設定。整理未着手 |
-| `aerospace/aerospace.toml` | `home.activation` でシンボリックリンク配置 | 動作確認済み |
-| `borders/bordersrc` | `xdg.configFile` で `~/.config/borders/bordersrc` に配置 | 起動自体は `nix/darwin.nix` の launchd agent が担当 |
-| `nvim/` | `home.activation` で `rm -rf` 後にシンボリックリンク | `~/.config/nvim` 自体がリンクになっている。加えて `nix/home/programs/neovim.nix` で `xdg.configFile."nvim/init.lua".enable = lib.mkForce false` により home-manager 自身の init.lua 生成を無効化 |
-| `wezterm/` | `home.activation` でシンボリックリンク | 設定ファイルは動作確認済み。`wezterm` 本体は home.packages ではなく `nix/homebrew` の cask で管理 |
-| `herdr/config.toml` | `xdg.configFile` で `~/.config/herdr/config.toml` に配置 | ターミナルワークスペースマネージャ herdr の設定。onboarding無効化・theme固定・CJK入力対応・sidebar複数行表示を設定済み |
-| `starship.toml` | `xdg.configFile` | `~/.config/starship.toml` にシンボリックリンク済み |
-| `gh/config.yml` | `programs.gh.enable` で管理 | `hosts.yml` は nix 管理外 |
-| `configstore/` | nix 管理外 | 各 CLI ツールの自動生成ファイル |
-| `starship/`, `tmux/`, `zsh/` | 空ディレクトリ | 将来の設定ファイル置き場として存在 |
+| `nix/home/programs/` | `programs.*` 設定 | `default.nix`（fzf, zoxide, gh, tmux, starship, zsh）、`git.nix`、`neovim.nix`。新ツールは `<name>.nix` を足して import |
+| `nix/home/dotfiles.nix` | `xdg.configFile` + `mkOutOfStoreSymlink` | `config/` 以下を `~/.config` にリンク。リポジトリ内ファイルを直接指すので編集は即反映 |
+| `config/nvim/` | → `~/.config/nvim` | `nix/home/programs/neovim.nix` で `xdg.configFile."nvim/init.lua".enable = lib.mkForce false` により home-manager 自身の init.lua 生成を無効化 |
+| `config/wezterm/` | → `~/.config/wezterm` | `wezterm` 本体は `nix/darwin/homebrew.nix` の cask で管理 |
+| `config/aerospace/aerospace.toml` | → `~/.config/aerospace/aerospace.toml` | 旧配置 `~/.aerospace.toml` が残っていると aerospace がエラーにするので削除すること |
+| `config/borders/bordersrc` | → `~/.config/borders/bordersrc` | 起動自体は `nix/darwin/launchd.nix` が担当 |
+| `config/herdr/config.toml` | → `~/.config/herdr/config.toml` | onboarding無効化・theme固定・CJK入力対応・sidebar複数行表示を設定済み |
+| `config/starship/starship.toml` | → `~/.config/starship.toml` | |
+| gh 設定 | `programs.gh.settings` で管理 | `hosts.yml` は nix 管理外 |
 
 ---
 
@@ -51,10 +50,10 @@ nix-darwin + home-manager で macOS (M1 MacBook Air) の環境を管理するリ
 `supabase-cli`, `cloudflared`, `docker`, `colima`, `ngrok`
 
 ### macOS GUI / ユーティリティ
-`switchaudio-osx`（`home.packages`）、`jankyborders`（`nix/darwin.nix` の launchd agent 経由）、`aerospace`（Homebrew cask、`nix/homebrew`。upstream不具合で一時無効化中）
+`switchaudio-osx`（`home.packages`）、`jankyborders`（`nix/darwin/launchd.nix` の launchd agent 経由）、`aerospace`（Homebrew cask、`nix/darwin/homebrew.nix`。upstream不具合で一時無効化中）
 
 ### ターミナル / マルチプレクサ
-`herdr`（`home.packages` + `herdr/config.toml`）、`wezterm`（Homebrew cask、`nix/homebrew`）
+`herdr`（`home.packages` + `config/herdr/config.toml`）、`wezterm`（Homebrew cask、`nix/darwin/homebrew.nix`）
 
 ### フォント
 `nerd-fonts.hack`, `nerd-fonts.jetbrains-mono`
@@ -70,30 +69,25 @@ nix-darwin + home-manager で macOS (M1 MacBook Air) の環境を管理するリ
 
 ### 1. UDEV Gothic NF フォントが未管理
 
-`wezterm/wezterm.lua` で `UDEV Gothic NF` を使用しているが、
+`config/wezterm/wezterm.lua` で `UDEV Gothic NF` を使用しているが、
 `nix/home/packages.nix` には `nerd-fonts.hack` と `nerd-fonts.jetbrains-mono` しかなく、
 UDEV Gothic NF は nix 管理外（手動インストール or Homebrew と推測）。
 
 ### 2. zsh の設定が空
 
 `~/.zshrc` は home-manager が生成したもの（nix store 内）のみで、
-`zsh/` ディレクトリは空。エイリアスや追加設定を `programs.zsh.initContent` で管理していない。
+zsh 用の設定ファイルは無い。エイリアスや追加設定を `programs.zsh.initContent` で管理していない。
 また `~/.zshrch`（タイポ）というファイルが存在する（nix管理外、手動で作られたもの）。
 
 ### 3. tmux 設定が空
 
-`programs.tmux.enable = true` だが `tmux/` ディレクトリは空で、tmux の設定が何もない。
+`programs.tmux.enable = true` だが tmux の設定が何もない。
 
-### 4. 旧設定ディレクトリが残存
+### 4. Rosetta 未インストール警告（nix設定側では直せない）
 
-`nix-darwin/` ディレクトリは旧設定（ユーザー `kyou`、ホスト `lCyouMac`）。
-現在は使われていないが、混乱の原因になる可能性がある。
+`sudo darwin-rebuild switch` で `Warning: The Intel Homebrew prefix has been set up, but Rosetta isn't installed yet.` が出る。`nix-homebrew.enableRosetta = true`（`nix/darwin/homebrew.nix`）はIntel用Homebrewプレフィックスを有効化するだけで、Rosetta 2本体のインストールは行わない。直すには一度だけ手動で `softwareupdate --install-rosetta --agree-to-license` を実行する必要がある（2026-09-08時点で未実行）。
 
-### 5. Rosetta 未インストール警告（nix設定側では直せない）
-
-`sudo darwin-rebuild switch` で `Warning: The Intel Homebrew prefix has been set up, but Rosetta isn't installed yet.` が出る。`nix-homebrew.enableRosetta = true`（`nix/homebrew/default.nix`）はIntel用Homebrewプレフィックスを有効化するだけで、Rosetta 2本体のインストールは行わない。直すには一度だけ手動で `softwareupdate --install-rosetta --agree-to-license` を実行する必要がある（2026-09-08時点で未実行）。
-
-### 6. `brew bundle --cleanup` 非推奨警告（nix-darwinのバージョン追従待ち）
+### 5. `brew bundle --cleanup` 非推奨警告（nix-darwinのバージョン追従待ち）
 
 `Warning: Calling the --cleanup switch is deprecated! There is no replacement.` が出る。原因はHomebrew CLI側が `brew bundle install --cleanup` を廃止し `--force-cleanup` に変更したのに対し、`flake.lock` で固定している nix-darwin (`8c62fba`, 2026-05-03) がまだ追従していないこと。上流は nix-darwin PR #1789（2026-06-17マージ）で対応済みだが、そのコミットを含む新しい nix-darwin (`4cff07d` 以降) は release branch チェックが厳格化されており、`nixpkgs-unstable` を使う現在の `flake.nix` の組み合わせだと `nix-darwin 26.11 with Nixpkgs 26.05` のミスマッチでビルドが失敗する（2026-09-08に `nix flake lock --update-input nix-darwin` で確認済み、要 revert）。nix-darwin と nixpkgs を対応するブランチに揃えて同時に上げるまでは、単なる警告として無害（ビルド自体は失敗しない）なので保留でよい。急ぐ場合の代替案として `homebrew.onActivation.cleanup = "none"` にすれば警告は消えるが、Brewfile外のcask/formulaを自動アンインストールする機能を失うトレードオフがある。
 
@@ -103,20 +97,18 @@ UDEV Gothic NF は nix 管理外（手動インストール or Homebrew と推�
 
 ### 高優先度
 
-- [ ] **aerospace caskの復活**: `nikitabobko/tap/aerospace` を `nix/homebrew/default.nix` で一時的に無効化中（2026-09-08）。原因は upstream (nikitabobko/homebrew-tap) 側の2026-09-06コミット `9ac0bfc "Migrate off the deprecated postflight ruby blocks"` で、`postflight_steps` 内の `#{version}` をプレースホルダー化し忘れたバグ（`undefined local variable or method 'version'` で `brew bundle` が失敗し `darwin-rebuild switch` が完了しない）。upstream修正を確認したら `casks` のコメントを解除する。
+- [ ] **aerospace caskの復活**: `nikitabobko/tap/aerospace` を `nix/darwin/homebrew.nix` で一時的に無効化中（2026-09-08）。原因は upstream (nikitabobko/homebrew-tap) 側の2026-09-06コミット `9ac0bfc "Migrate off the deprecated postflight ruby blocks"` で、`postflight_steps` 内の `#{version}` をプレースホルダー化し忘れたバグ（`undefined local variable or method 'version'` で `brew bundle` が失敗し `darwin-rebuild switch` が完了しない）。upstream修正を確認したら `casks` のコメントを解除する。
 - [ ] **UDEV Gothic NF フォントの管理**: nix で管理できる場合は追加（`nerd-fonts.udev-gothic`など）、できなければ Homebrew Cask で管理
 
 ### 中優先度
 
-- [ ] **zsh 設定の整備**: エイリアス・カスタム設定を `programs.zsh.initContent` に移行、`~/.zshrch`（タイポファイル）を削除または整理
-- [ ] **tmux 設定の追加**: `programs.tmux` に設定を追加するか `tmux/` にファイルを置いて home-manager で管理
-- [ ] **旧設定 `nix-darwin/` の整理**: 参照用に残すか削除するか決める
+- [ ] **zsh 設定の整備**: エイリアス・カスタム設定を `nix/home/programs/zsh.nix` の `programs.zsh.initContent` に移行、`~/.zshrch`（タイポファイル）を削除または整理
+- [ ] **tmux 設定の追加**: `nix/home/programs/tmux.nix` で `programs.tmux` に設定を追加するか `config/tmux/` にファイルを置いて `dotfiles.nix` でリンク
 
 ### 低優先度 / 将来の拡張
 
-- [ ] **macOS システム設定の追加**: `darwin.nix` に `system.defaults` でキーボード・トラックパッド・Dock 設定を追加
+- [ ] **macOS システム設定の追加**: `nix/darwin/` に `system.defaults` でキーボード・トラックパッド・Dock 設定を追加
 - [ ] **gh hosts.yml の管理**: `~/.config/gh/hosts.yml` を nix で管理（認証トークンを含むため secrets 管理が必要）
-- [ ] **configstore/ の整理**: gitignore するか nix で管理するか決める
 
 ---
 
