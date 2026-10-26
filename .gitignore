@@ -1,8 +1,2 @@
 .DS_Store
 result
-
-flutter/*
-gcloud/*
-github-copilot/*
-iterm2/*
-yarn/*
