@@ -1,8 +1,8 @@
-{ ... }: {
+{ host, ... }: {
   nix-homebrew = {
     enable = true;
     enableRosetta = true;
-    user = "lcyou";
+    user = host.user;
     mutableTaps = true;
   };
 

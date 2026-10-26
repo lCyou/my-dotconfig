@@ -30,6 +30,6 @@ in {
     nerd-fonts.hack nerd-fonts.jetbrains-mono
 
     # External flakes
-    herdr.packages.aarch64-darwin.default
+    herdr.packages.${pkgs.stdenv.hostPlatform.system}.default
   ];
 }
